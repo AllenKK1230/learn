@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>学习日记 · 日清日结</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'STSong', 'SimSun', 'Noto Serif SC', serif, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a1f0f 0%, #1a3a2a 50%, #0a1f0f 100%);
+            padding: 16px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(ellipse at 20% 30%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(20, 184, 166, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(16, 137, 132, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 Q60 20 80 10 Q90 30 85 50 Q90 70 80 90 Q60 80 50 95 Q40 80 20 90 Q10 70 15 50 Q10 30 20 10 Q40 20 50 5' fill='none' stroke='rgba(34, 197, 94, 0.15)' stroke-width='0.5'/%3E%3C/svg%3E") no-repeat;
+            background-size: contain;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cloud-decoration {
+            position: fixed;
+            top: 15%;
+            left: 5%;
+            width: 80px;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cellipse cx='25' cy='30' rx='20' ry='15' fill='rgba(34, 197, 94, 0.1)'/%3E%3Cellipse cx='50' cy='25' rx='25' ry='18' fill='rgba(34, 197, 94, 0.1)'/%3E%3Cellipse cx='75' cy='30' rx='20' ry='15' fill='rgba(34, 197, 94, 0.1)'/%3E%3C/svg%3E") no-repeat;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .cloud-decoration:nth-child(2) {
+            top: 60%;
+            left: 85%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(20px) translateY(-10px); }
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(145deg, rgba(26, 58, 42, 0.9) 0%, rgba(10, 31, 15, 0.95) 100%);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                inset 0 0 60px rgba(34, 197, 94, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.5), transparent);
+        }
+
+        .title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #22c55e 0%, #4ade80 50%, #22c55e 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 4px;
+        }
+
+        .title p {
+            font-size: 0.85rem;
+            color: #4ade80;
+            margin-top: 4px;
+            letter-spacing: 2px;
+        }
+
+        .date-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(34, 197, 94, 0.15);
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .date-section span {
+            font-weight: 600;
+            color: #22c55e;
+            font-size: 0.9rem;
+        }
+
+        input[type="date"] {
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+        }
+
+        .save-indicator {
+            font-size: 0.75rem;
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.15);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 16px;
+            padding: 8px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 28px;
+            }
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(26, 58, 42, 0.8) 0%, rgba(10, 31, 15, 0.9) 100%);
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                inset 0 0 60px rgba(34, 197, 94, 0.03);
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                rgba(34, 197, 94, 0.3) 20%, 
+                rgba(34, 197, 94, 0.6) 50%, 
+                rgba(34, 197, 94, 0.3) 80%, 
+                transparent 95%);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.2), transparent);
+        }
+
+        .card-header {
+            padding: 18px 22px 12px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 2px;
+        }
+
+        .card-header h2::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            border-radius: 3px;
+        }
+
+        .card-learn .card-header h2::before {
+            background: linear-gradient(180deg, #22c55e, #16a34a);
+        }
+
+        .card-problem .card-header h2::before {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+        }
+
+        .card-plan .card-header h2::before {
+            background: linear-gradient(180deg, #3b82f6, #2563eb);
+        }
+
+        .badge {
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 40px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            color: #22c55e;
+            font-weight: 500;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .add-section {
+            padding: 14px 20px 10px 20px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .add-section input {
+            flex: 1;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            transition: all 0.3s;
+        }
+
+        .add-section input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+        }
+
+        .add-section input::placeholder {
+            color: #166534;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+            border: none;
+            color: #0a1f0f;
+            padding: 0 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            height: 40px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #4ade80 0%, #22c55e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .items-list {
+            padding: 10px 14px 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .items-list::-webkit-scrollbar-track {
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 2px;
+        }
+
+        .items-list::-webkit-scrollbar-thumb {
+            background: rgba(34, 197, 94, 0.4);
+            border-radius: 2px;
+        }
+
+        .items-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(34, 197, 94, 0.6);
+        }
+
+        .list-item {
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            flex-wrap: wrap;
+        }
+
+        .list-item:hover {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            transform: translateX(4px);
+        }
+
+        .list-item.completed {
+            opacity: 0.5;
+        }
+
+        .list-item.completed .item-content {
+            text-decoration: line-through;
+            color: #166534;
+        }
+
+        .item-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #22c55e;
+        }
+
+        .item-content {
+            flex: 1;
+            font-size: 0.9rem;
+            word-break: break-word;
+            color: #22c55e;
+            min-width: 100px;
+        }
+
+        .item-content.editing {
+            border: 1px solid #22c55e;
+            border-radius: 6px;
+            padding: 4px 8px;
+            outline: none;
+            font-size: 0.9rem;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .item-status {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .item-status.solved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .item-status.unsolved {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .icon-btn {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: #22c55e;
+        }
+
+        .icon-btn:hover {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: rgba(34, 197, 94, 0.4);
+            transform: scale(1.1);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+        }
+
+        .btn-transfer {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .btn-transfer:hover {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: rgba(34, 197, 94, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #166534;
+            font-size: 0.9rem;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: #166534;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .day-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .day-nav button {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #22c55e;
+            transition: all 0.3s;
+        }
+
+        .day-nav button:hover {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: rgba(34, 197, 94, 0.5);
+            color: #4ade80;
+        }
+    </style>
+</head>
+<body>
+    <div class="cloud-decoration"></div>
+    <div class="cloud-decoration"></div>
+    <div class="app-container">
+        <div class="header">
+            <div class="title">
+                <h1>学习日记 · 日清日结</h1>
+                <p>记录每日所学，规划明日计划</p>
+            </div>
+            <div class="date-section">
+                <div class="day-nav">
+                    <button onclick="changeDay(-1)">← 昨天</button>
+                </div>
+                <span id="currentDateText"></span>
+                <input type="date" id="datePicker" onchange="onDateChange()">
+                <div class="day-nav">
+                    <button onclick="changeDay(1)">明天 →</button>
+                </div>
+                <span class="save-indicator" id="saveIndicator">已自动保存</span>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card card-learn">
+                <div class="card-header">
+                    <h2>今日所学</h2>
+                    <span class="badge" id="learnCount">0 条</span>
+                </div>
+                <div class="add-section">
+                    <input type="text" id="addLearnInput" placeholder="输入今日所学..." onkeydown="handleKeydown(event, 'learn')" onblur="saveOnBlur('learn')">
+                    <button class="btn-primary" onclick="addItem('learn')">+</button>
+                </div>
+                <div class="items-list" id="learnList">
+                    <div class="empty-state">
+                        <div>📝</div>
+                        <p>暂无学习记录</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-problem">
+                <div class="card-header">
+                    <h2>今日问题</h2>
+                    <span class="badge" id="problemCount">0 条</span>
+                </div>
+                <div class="add-section">
+                    <input type="text" id="addProblemInput" placeholder="输入今日问题..." onkeydown="handleKeydown(event, 'problem')" onblur="saveOnBlur('problem')">
+                    <button class="btn-primary" onclick="addItem('problem')">+</button>
+                </div>
+                <div class="items-list" id="problemList">
+                    <div class="empty-state">
+                        <div>❓</div>
+                        <p>暂无问题记录</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-plan">
+                <div class="card-header">
+                    <h2>明日计划</h2>
+                    <span class="badge" id="planCount">0 条</span>
+                </div>
+                <div class="add-section">
+                    <input type="text" id="addPlanInput" placeholder="输入明日计划..." onkeydown="handleKeydown(event, 'plan')" onblur="saveOnBlur('plan')">
+                    <button class="btn-primary" onclick="addItem('plan')">+</button>
+                </div>
+                <div class="items-list" id="planList">
+                    <div class="empty-state">
+                        <div>📅</div>
+                        <p>暂无计划记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            数据自动保存于本地 · 日清日结，每日精进
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'study_diary_data';
+        let currentDate = new Date();
+        let data = {};
+
+        function init() {
+            loadData();
+            renderCurrentDate();
+            renderAllLists();
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    data = JSON.parse(stored);
+                } catch {
+                    data = {};
+                }
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showSaveIndicator();
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.textContent = '✓ 已保存';
+            setTimeout(() => {
+                indicator.textContent = '已自动保存';
+            }, 1500);
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateText(date) {
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekday = weekdays[date.getDay()];
+            return `${year}年${month}月${day}日 ${weekday}`;
+        }
+
+        function getDateKey(date) {
+            return formatDate(date);
+        }
+
+        function getDayData(dateKey) {
+            if (!data[dateKey]) {
+                data[dateKey] = {
+                    learn: [],
+                    problem: [],
+                    plan: []
+                };
+            }
+            return data[dateKey];
+        }
+
+        function renderCurrentDate() {
+            document.getElementById('currentDateText').textContent = formatDateText(currentDate);
+            document.getElementById('datePicker').value = formatDate(currentDate);
+        }
+
+        function onDateChange() {
+            const picker = document.getElementById('datePicker');
+            const newDate = new Date(picker.value);
+            if (!isNaN(newDate.getTime())) {
+                currentDate = newDate;
+                renderCurrentDate();
+                renderAllLists();
+            }
+        }
+
+        function changeDay(days) {
+            currentDate = new Date(currentDate);
+            currentDate.setDate(currentDate.getDate() + days);
+            renderCurrentDate();
+            renderAllLists();
+        }
+
+        function renderList(listId, items, type) {
+            const list = document.getElementById(listId);
+            const count = document.getElementById(`${type}Count`);
+
+            if (!items || items.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div>${type === 'learn' ? '📝' : type === 'problem' ? '❓' : '📅'}</div>
+                        <p>暂无记录</p>
+                    </div>
+                `;
+                count.textContent = '0 条';
+                return;
+            }
+
+            count.textContent = `${items.length} 条`;
+
+            list.innerHTML = items.map((item, index) => {
+                if (type === 'problem') {
+                    return `
+                        <div class="list-item" data-index="${index}">
+                            <span class="item-content" ondblclick="startEdit(this, '${type}', ${index})">${escapeHtml(item.content)}</span>
+                            <span class="item-status ${item.solved ? 'solved' : 'unsolved'}" onclick="toggleProblemSolved(${index})">
+                                ${item.solved ? '已解决' : '未解决'}
+                            </span>
+                            <button class="btn-transfer" onclick="transferToPlan(${index})">转为明日计划</button>
+                            <div class="item-actions">
+                                <button class="icon-btn" onclick="deleteItem('${type}', ${index})">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                } else if (type === 'plan') {
+                    return `
+                        <div class="list-item ${item.completed ? 'completed' : ''}" data-index="${index}">
+                            <input type="checkbox" class="item-checkbox" ${item.completed ? 'checked' : ''} onchange="togglePlanCompleted(${index})">
+                            <span class="item-content" ondblclick="startEdit(this, '${type}', ${index})">${escapeHtml(item.content)}</span>
+                            <div class="item-actions">
+                                <button class="icon-btn" onclick="deleteItem('${type}', ${index})">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="list-item" data-index="${index}">
+                            <span class="item-content" ondblclick="startEdit(this, '${type}', ${index})">${escapeHtml(item.content)}</span>
+                            <div class="item-actions">
+                                <button class="icon-btn" onclick="deleteItem('${type}', ${index})">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function renderAllLists() {
+            const dateKey = getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+            renderList('learnList', dayData.learn, 'learn');
+            renderList('problemList', dayData.problem, 'problem');
+            
+            const tomorrow = new Date(currentDate);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowKey = getDateKey(tomorrow);
+            const tomorrowData = getDayData(tomorrowKey);
+            renderList('planList', tomorrowData.plan, 'plan');
+        }
+
+        function addItem(type) {
+            const input = document.getElementById(`add${type.charAt(0).toUpperCase() + type.slice(1)}Input`);
+            const value = input.value.trim();
+            
+            if (!value) return;
+
+            const dateKey = type === 'plan' ? getTomorrowKey() : getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+
+            if (type === 'problem') {
+                dayData.problem.push({ content: value, solved: false });
+            } else if (type === 'plan') {
+                dayData.plan.push({ content: value, completed: false });
+            } else {
+                dayData.learn.push({ content: value });
+            }
+
+            input.value = '';
+            saveData();
+            renderAllLists();
+        }
+
+        function getTomorrowKey() {
+            const tomorrow = new Date(currentDate);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return getDateKey(tomorrow);
+        }
+
+        function deleteItem(type, index) {
+            const dateKey = type === 'plan' ? getTomorrowKey() : getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+
+            if (type === 'problem') {
+                dayData.problem.splice(index, 1);
+            } else if (type === 'plan') {
+                dayData.plan.splice(index, 1);
+            } else {
+                dayData.learn.splice(index, 1);
+            }
+
+            saveData();
+            renderAllLists();
+        }
+
+        function toggleProblemSolved(index) {
+            const dateKey = getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+            dayData.problem[index].solved = !dayData.problem[index].solved;
+            saveData();
+            renderAllLists();
+        }
+
+        function togglePlanCompleted(index) {
+            const tomorrowKey = getTomorrowKey();
+            const tomorrowData = getDayData(tomorrowKey);
+            tomorrowData.plan[index].completed = !tomorrowData.plan[index].completed;
+            saveData();
+            renderAllLists();
+        }
+
+        function transferToPlan(index) {
+            const dateKey = getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+            const problem = dayData.problem[index];
+            
+            const tomorrowKey = getTomorrowKey();
+            const tomorrowData = getDayData(tomorrowKey);
+            tomorrowData.plan.push({ content: problem.content, completed: false });
+            
+            dayData.problem.splice(index, 1);
+            
+            saveData();
+            renderAllLists();
+        }
+
+        function startEdit(element, type, index) {
+            const content = element.textContent;
+            element.innerHTML = `<input type="text" class="item-content editing" value="${escapeHtml(content)}" onkeydown="finishEdit(event, this, '${type}', ${index})" onblur="finishEditOnBlur(this, '${type}', ${index})">`;
+            const input = element.querySelector('input');
+            input.focus();
+            input.select();
+        }
+
+        function finishEdit(event, input, type, index) {
+            if (event.key === 'Enter') {
+                saveEdit(input, type, index);
+            } else if (event.key === 'Escape') {
+                input.value = input.dataset.original || input.value;
+                cancelEdit(input, type, index);
+            }
+        }
+
+        function finishEditOnBlur(input, type, index) {
+            saveEdit(input, type, index);
+        }
+
+        function saveEdit(input, type, index) {
+            const value = input.value.trim();
+            if (!value) {
+                deleteItem(type, index);
+                return;
+            }
+
+            const dateKey = type === 'plan' ? getTomorrowKey() : getDateKey(currentDate);
+            const dayData = getDayData(dateKey);
+
+            if (type === 'problem') {
+                dayData.problem[index].content = value;
+            } else if (type === 'plan') {
+                dayData.plan[index].content = value;
+            } else {
+                dayData.learn[index].content = value;
+            }
+
+            saveData();
+            renderAllLists();
+        }
+
+        function cancelEdit(input, type, index) {
+            renderAllLists();
+        }
+
+        function handleKeydown(event, type) {
+            if (event.key === 'Enter') {
+                addItem(type);
+            }
+        }
+
+        function saveOnBlur(type) {
+            saveData();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#039;');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
